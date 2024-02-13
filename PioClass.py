@@ -287,11 +287,13 @@ class Pio:
             #Hariamos ping a cada ip
             resultPing = os.popen("ping -n 1 " + ipToPing).read() #Esta funcion te ejecuta un comando com si fuese os.system() pero te devuelve el resultado de la ejecucion de comandos
             if(re.search(r'\bTTL\b',resultPing) is None):
+                if(self.__verbose):
+                    print(COLORS.FAIL + "[-] {} esta desconectado!".format(ipToPing) + COLORS.ENDC)
                 continue
             else:
-                print("[+] {} is online!".format(ipToPing))if(self.__verbose)else(None)
                 self.setIpsAddressOnline(ipToPing)
-                
+                if(self.__verbose):
+                    print(COLORS.OKGREEN + "[+] {} esta conectado!".format(ipToPing) + COLORS.ENDC)
                 
         return self.getIpsAddressOnline()
     
