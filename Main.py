@@ -166,7 +166,6 @@ def selectOption(option):
 
     #<---------- | Salir | ---------->
     elif(option == 8):
-        
         #Utils.loading()
         os.system("exit")
 

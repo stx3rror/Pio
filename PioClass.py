@@ -36,7 +36,6 @@ class Pio:
 #<--------------------- | CONSTRUCTOR | --------------------->
     
     def __init__(self):
-        
         self.__openPorts=[]
         self.__urlsOnline=[]
         self.__const={}
