@@ -1,5 +1,18 @@
 import os
-from PioClassV0_9_5 import Pio
+from PioClass import *
+
+class COLORS:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def title():
     print("      ___                       ___     ")
     print("     /\  \          ___        /\  \    ")
@@ -12,9 +25,8 @@ def title():
     print("       \/__/    \:\__\       \:\/:/  /  ")
     print("                 \/__/        \::/  /   ")
     print("                               \/__/    ")
-    print("\nCreated By: stx3rror©")
-    print("GitHub: https://github.com/stx3rror")
-    print("Contact: stx3rror@gmail.com\n")
+    print("\nCreated By: XSFrenetic©")
+    print("Contact: wwbhty@gmail.com\n")
         
 def options():
         
@@ -24,9 +36,11 @@ def options():
     print("4. Escaneo de rutas HTTP")
     print("5. Obtener IP de un host") 
     print("6. Ver mi Ip")
-    print("7. Salir")
-       
+    print("7. Configuracion")
+    print("8. Salir")
+    
     option = input("\n[*] Introduce la opcion que prefieras... ")
+    
     selectOption(option)
 def selectOption(option):
     try:
@@ -37,13 +51,12 @@ def selectOption(option):
     if(option < 1 or option > 7):
         raise TypeError("The option selected not exists")
 
-    pio = Pio()
     #<---------- | Escaneo de puertos | ---------->
         
     if(option == 1):
         host = input("Introduce el host... ")#str
         numPuerts = input("[*] Introduce el numero de puertos... ")#int
-        interval = input("Introduce el tiempo entre paquetes (en milisegundos)... ")#int
+        interval = input("Introduce el tiempo entre paquetes (en segundos)... ")#int
         try:
             numPuerts = int(numPuerts)
             interval = float(interval)
@@ -54,12 +67,16 @@ def selectOption(option):
         pio.setNumberPorts(numPuerts)
         pio.setIntervaleRequests(interval)
 
-        arrayPorts = pio.scanPorts()
+        arrayPorts = pio.scanPorts(title)
+
         if(len(arrayPorts) > 0):
             for port in arrayPorts:
-                print('\t[+] Open port found: ',port)
+                print(COLORS.OKGREEN + '\t[+] Open port found: {}'.format(port) + COLORS.ENDC)
         else:
-            print("[-] No open ports found!")
+            print(COLORS.FAIL + "[-] No open ports found!" + COLORS.ENDC)
+
+
+
 
     #<---------- | Escaneo de un puerto | ---------->
     elif(option == 2):
@@ -74,24 +91,22 @@ def selectOption(option):
         pio.setPort(port)
         isOpen = pio.scanOnePort()
         if(len(isOpen)>0):
-            print("[+] The port {} is open!".format(port))
+            print(COLORS.OKGREEN + "[+] The port {} is open!".format(port) + COLORS.ENDC)
         else:
-            print("[-] The port {} is close".format(port))
+            print(COLORS.FAIL + "[-] The port {} is close".format(port) + COLORS.ENDC)
 
 
     #<---------- | Escaneo de equipos de red | ---------->
     elif(option == 3):
         rangeOfIps = input("Example. 192.168.1.32-87\nRange of IPs to scan... ")
         pio.setRangeIps(rangeOfIps)
-        debugOutput = pio.activateDebug(1)
         arrayOfIps = pio.scanRangesNetwork()
-        if(debugOutput != True!=True):
-            
+        if(not(pio.getVerbose())):
             if(len(arrayOfIps)>0):
                 for ip in arrayOfIps:
-                    print("\t[+] The host {} is online!".format(ip))
+                    print(COLORS.OKGREEN + "\t[+] El host {} esta conectado!".format(ip) + COLORS.ENDC)
             else:
-                print("[-] All hosts on this network are offline")
+                print(COLORS.FAIL + "[-] Todos los hots de esta red están desconectados" + COLORS.ENDC)
 
 
     #<---------- | Escaneo de rutas HTTP | ---------->
@@ -115,9 +130,9 @@ def selectOption(option):
         arrayUrls = pio.scanRutesHttp()
         if(len(arrayUrls)>0):
             for url in arrayUrls:
-                print("[+] {} found!".format(url))
+                print(COLORS.OKGREEN + "[+] {} encontrada!".format(url) + COLORS.ENDC)
         else:
-            print("[-] No rutes found")
+            print(COLORS.FAIL + "[-] Ninguna ruta encontrada" + COLORS.ENDC)
 
     #<---------- | Conseguir ip de un hostname | ---------->       
     elif(option == 5):
@@ -125,28 +140,45 @@ def selectOption(option):
         pio.setHostname(host)
         ipLocal = pio.getIpFromHostname()
         if(ipLocal != ""):
-            print("[+] The Ip Address of [{}] is {}".format(host,ipLocal))
+            print(COLORS.OKGREEN + "[+] La direccion ip de [{}] es {}".format(host,ipLocal) + COLORS.ENDC)
         else:
-            print("[-] The host {} is offline or the firewall is blocking it")
+            print(COLORS.FAIL + "[-] El host {} está desconectado o el firewall lo está bloqueando" + COLORS.ENDC)
 
 
     #<---------- | Conseguir mi ip | ---------->        
     elif(option == 6):
         myIp = pio.getMyOwnIp()
         if(myIp!=""):
-            print("My Ip address is {}".format(myIp))
+            print("Mi direcction ip es {}".format(myIp))
         else:
-            print("My Ip address not found")
+            print("Direccion ip no encontrada")
 
+    #<---------- | Configuracion | ---------->
+    elif(option == 7):
+        
+        os.system("cls")
+        title()
+        print("1. Alternar verbose (Estado actual: {})".format("Activado"if(pio.getVerbose())else"Desactivado"))
+        if(input("Selecciona opcion de configuración: ") == '1'):
+            pio.toggleVerbose()
+        else:
+            pass
 
     #<---------- | Salir | ---------->
-    elif(option == 7):
+    elif(option == 8):
+        
+        #Utils.loading()
         os.system("exit")
 
     input("Pulse una tecla para continuar...")
         
 if __name__ != '__init__':
+    pio = Pio()
     while(True):
-        title()
-        options()
-        os.system("cls")
+        try:
+            title()
+            options()
+            os.system("cls")
+        except(KeyboardInterrupt):
+            os.system("cls")
+            pass
