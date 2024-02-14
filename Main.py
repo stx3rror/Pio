@@ -48,7 +48,7 @@ def selectOption(option):
     except:
         raise TypeError("The option mustn't be a integer")
             
-    if(option < 1 or option > 7):
+    if(option < 1 or option > 8):
         raise TypeError("The option selected not exists")
 
     #<---------- | Escaneo de puertos | ---------->
@@ -111,9 +111,11 @@ def selectOption(option):
 
     #<---------- | Escaneo de rutas HTTP | ---------->
     elif(option == 4):
-        urlAddress = input("Example. http://url.com\n[*] Introduce la url para escanear... ")
-        file = input("[*] Introduce la ruta del archivo del diccionario... ")
-        print("Example. num>0 -> cantidad de rutas. num=0 -> todas las rutas")
+        print("Example. http://url.com")
+        urlAddress = input("[*] Introduce la url para escanear... ")
+        file = str(input("[*] Introduce la ruta del archivo del diccionario... "))
+        file = os.path.normpath(file)#From: C:/Windows/System32 To:C://Windows//System32
+        print("Ejemplo. (any-number)>0 -> cantidad de rutas. (any-number)=0 -> todas las rutas")
         intervaleRutes = input("[*] Introduce la cantidad de rutas a probar ... ")
            
         try:
@@ -127,7 +129,7 @@ def selectOption(option):
         pio.setIntervaleRutes(intervaleRutes)
         pio.setUrlAddress(urlAddress)
 
-        arrayUrls = pio.scanRutesHttp()
+        arrayUrls = pio.scanRutesHttp(title)
         if(len(arrayUrls)>0):
             for url in arrayUrls:
                 print(COLORS.OKGREEN + "[+] {} encontrada!".format(url) + COLORS.ENDC)
@@ -166,7 +168,6 @@ def selectOption(option):
 
     #<---------- | Salir | ---------->
     elif(option == 8):
-        #Utils.loading()
         os.system("exit")
 
     input("Pulse una tecla para continuar...")

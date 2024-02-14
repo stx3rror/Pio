@@ -125,6 +125,8 @@ class Pio:
         
     def setUrlAddress(self,url):
         if(type(url) == str):
+            if(url[-1]=='/' or url[-1]=='\\'):
+                url = url[0:-1]
             self.__urlAddress = url
         else:
             raise TypeError("The intervale of requests must be a string")
@@ -237,10 +239,11 @@ class Pio:
         localIp = self.getIp()
         cycleNum = 1
         for port in range (1,localNumberPorts+1):
-            os.system("cls")
-            funcNoVerbose()
-            print('Puerto {}/{} escaneado'.format(cycleNum,localNumberPorts))
-            cycleNum += 1
+            if(not(self.__verbose)):
+                os.system("cls")
+                funcNoVerbose()
+                print('Puerto {}/{} escaneado'.format(cycleNum,localNumberPorts))
+                cycleNum += 1
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(localIntervalRequests)
             result = sock.connect_ex((localIp,port))
@@ -297,8 +300,9 @@ class Pio:
                 
         return self.getIpsAddressOnline()
     
-    def scanRutesHttp(self):
+    def scanRutesHttp(self,funcNoVerbose):
         cont=0
+        print(self.getFile())
         file=open(self.getFile(),"r")
     
         if(self.getIntervaleRutes!=0):
@@ -306,10 +310,17 @@ class Pio:
         else:
             contMax=len(file.readlines())
 
+        cycleNum = 0
         for linea in file:
+            
             if(cont==contMax):
                 break
             else:
+                if(not(self.__verbose)):
+                    os.system("cls")
+                    funcNoVerbose()
+                    print('Ruta',cycleNum,'/',contMax,'escaneada. Directorio actual:',COLORS.OKCYAN,linea,COLORS.ENDC)
+                    cycleNum += 1
                 url=self.getUrlAddress()+"/"+linea
                 url=url.strip()            
                 code=requests.get(url).status_code
@@ -320,29 +331,6 @@ class Pio:
                 cont+=1
         file.close()
         return self.getUrlsOnline()
-
-class Utils:
-    
-    @staticmethod
-    def loading():
-        
-        for c in itertools.cycle(['|', '/', '-', '\\']):
-            sys.stdout.write('\rloading ' + c)
-            sys.stdout.flush()
-            time.sleep(0.1)
-        sys.stdout.write('\rDone!')
-
-        while True:
-
-            sys.stdout.write('\rloading |')
-            time.sleep(0.1)
-            sys.stdout.write('\rloading /')
-            time.sleep(0.1)
-            sys.stdout.write('\rloading -')
-            time.sleep(0.1)
-            sys.stdout.write('\rloading \\')
-            time.sleep(0.1)
-        sys.stdout.write('\rDone!     ')
         
 class COLORS:
     HEADER = '\033[95m'
