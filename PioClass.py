@@ -249,11 +249,11 @@ class Pio:
             result = sock.connect_ex((localIp,port))
             if(self.__verbose):
                 if result == 0:
-                    print(COLORS.OKGREEN + '[+] Port {} is open'.format(port) + COLORS.ENDC)
+                    print(COLORS.OKGREEN + '[+] Pueto {} abierto'.format(port) + COLORS.ENDC)
                     self.setOpenPorts(port)
                     
                 else:                
-                    print(COLORS.FAIL + '[-] Port {} is close'.format(port) + COLORS.ENDC)
+                    print(COLORS.FAIL + '[-] Puerto {} cerrado'.format(port) + COLORS.ENDC)
             else:                  
                 if result == 0:
                     self.setOpenPorts(port)
@@ -275,6 +275,14 @@ class Pio:
             
         sock.close()
         return self.getOpenPorts()
+    
+    def scanServicePort(self):
+        puerto = self.getPort()
+        try:
+            servicio = socket.getservbyport(puerto, "tcp")
+            return servicio.upper()
+        except OSError:
+            return None
 
     def scanRangesNetwork(self):
         
@@ -302,12 +310,12 @@ class Pio:
     
     def scanRutesHttp(self,funcNoVerbose):
         cont=0
-        print(self.getFile())
         file=open(self.getFile(),"r")
     
         if(self.getIntervaleRutes!=0):
             contMax=int(self.getIntervaleRutes())
         else:
+            print(file)
             contMax=len(file.readlines())
 
         cycleNum = 0
@@ -321,12 +329,17 @@ class Pio:
                     funcNoVerbose()
                     print('Ruta',cycleNum,'/',contMax,'escaneada. Directorio actual:',COLORS.OKCYAN,linea,COLORS.ENDC)
                     cycleNum += 1
+
                 url=self.getUrlAddress()+"/"+linea
                 url=url.strip()            
                 code=requests.get(url).status_code
                 if(code==200):
                     self.setUrlsOnline(url)
+                    if(self.__verbose):
+                        print(COLORS.OKGREEN + "[+] Directorio " + COLORS.OKCYAN + linea.strip() + COLORS.ENDC + COLORS.OKGREEN + " encontrado!" + COLORS.ENDC)
                 else:
+                    if(self.__verbose):
+                        print(COLORS.FAIL + "[-] Directorio " + COLORS.OKCYAN + linea.strip() + COLORS.ENDC + COLORS.FAIL + " no encontrado!" + COLORS.ENDC)
                     pass
                 cont+=1
         file.close()

@@ -1,4 +1,4 @@
-import os
+import os,sys
 from PioClass import *
 
 class COLORS:
@@ -32,12 +32,13 @@ def options():
         
     print("1. Escaneo de puertos ")
     print("2. Escaneo de puerto especifico ")
-    print("3. Escaneo de rangos de IPs")
-    print("4. Escaneo de rutas HTTP")
-    print("5. Obtener IP de un host") 
-    print("6. Ver mi Ip")
-    print("7. Configuracion")
-    print("8. Salir")
+    print("3. Escaneo de servicio corriendo en un puerto")
+    print("4. Escaneo de rangos de IPs")
+    print("5. Escaneo de rutas HTTP")
+    print("6. Obtener IP de un host") 
+    print("7. Ver mi Ip")
+    print("8. Configuracion")
+    print("9. Salir")
     
     option = input("\n[*] Introduce la opcion que prefieras... ")
     
@@ -48,7 +49,7 @@ def selectOption(option):
     except:
         raise TypeError("The option mustn't be a integer")
             
-    if(option < 1 or option > 8):
+    if(option < 1 or option > 9):
         raise TypeError("The option selected not exists")
 
     #<---------- | Escaneo de puertos | ---------->
@@ -95,9 +96,23 @@ def selectOption(option):
         else:
             print(COLORS.FAIL + "[-] The port {} is close".format(port) + COLORS.ENDC)
 
+    #<---------- | Escaneo de un servicio | ---------->
+    elif(option == 3):
+        port = input("[*] Introduce el puerto... ")#int
+        try:
+            port = int(port)
+        except:
+            raise TypeError("The port must be a integer")
+        
+        pio.setPort(port)
+        servicio = pio.scanServicePort()
+        if(servicio!=None):
+            print(COLORS.OKGREEN,"[+] El puerto {} esta corriendo el servicio {}".format(port,servicio), COLORS.ENDC)
+        else:
+            print(COLORS.FAIL,"[-] No se ha encontrado el servicio corriendo en el puerto {}".format(port),COLORS.ENDC)
 
     #<---------- | Escaneo de equipos de red | ---------->
-    elif(option == 3):
+    elif(option == 4):
         rangeOfIps = input("Example. 192.168.1.32-87\nRange of IPs to scan... ")
         pio.setRangeIps(rangeOfIps)
         arrayOfIps = pio.scanRangesNetwork()
@@ -110,13 +125,14 @@ def selectOption(option):
 
 
     #<---------- | Escaneo de rutas HTTP | ---------->
-    elif(option == 4):
+    elif(option == 5):
         print("Example. http://url.com")
         urlAddress = input("[*] Introduce la url para escanear... ")
         file = str(input("[*] Introduce la ruta del archivo del diccionario... "))
         file = os.path.normpath(file)#From: C:/Windows/System32 To:C://Windows//System32
         print("Ejemplo. (any-number)>0 -> cantidad de rutas. (any-number)=0 -> todas las rutas")
         intervaleRutes = input("[*] Introduce la cantidad de rutas a probar ... ")
+        print("")
            
         try:
             file = str(file)
@@ -137,7 +153,7 @@ def selectOption(option):
             print(COLORS.FAIL + "[-] Ninguna ruta encontrada" + COLORS.ENDC)
 
     #<---------- | Conseguir ip de un hostname | ---------->       
-    elif(option == 5):
+    elif(option == 6):
         host = input("Example. www.url.com\n[*] Introduce el host... ")#str
         pio.setHostname(host)
         ipLocal = pio.getIpFromHostname()
@@ -148,7 +164,7 @@ def selectOption(option):
 
 
     #<---------- | Conseguir mi ip | ---------->        
-    elif(option == 6):
+    elif(option == 7):
         myIp = pio.getMyOwnIp()
         if(myIp!=""):
             print("Mi direcction ip es {}".format(myIp))
@@ -156,7 +172,7 @@ def selectOption(option):
             print("Direccion ip no encontrada")
 
     #<---------- | Configuracion | ---------->
-    elif(option == 7):
+    elif(option == 8):
         
         os.system("cls")
         title()
@@ -167,8 +183,9 @@ def selectOption(option):
             pass
 
     #<---------- | Salir | ---------->
-    elif(option == 8):
-        os.system("exit")
+    elif(option == 9):
+        sys.exit(0)
+            
 
     input("Pulse una tecla para continuar...")
         
