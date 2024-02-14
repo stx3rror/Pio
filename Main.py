@@ -11,6 +11,8 @@ class COLORS:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    RED = '\033[0;31m'
+    YELLOW = '\033[1;33m'
 
 
 def title():
@@ -107,9 +109,9 @@ def selectOption(option):
         pio.setPort(port)
         servicio = pio.scanServicePort()
         if(servicio!=None):
-            print(COLORS.OKGREEN,"[+] El puerto {} esta corriendo el servicio {}".format(port,servicio), COLORS.ENDC)
+            print(COLORS.OKGREEN," [+] El puerto {} esta corriendo el servicio {} ".format(port,servicio), COLORS.ENDC)
         else:
-            print(COLORS.FAIL,"[-] No se ha encontrado el servicio corriendo en el puerto {}".format(port),COLORS.ENDC)
+            print(COLORS.FAIL," [-] No se ha encontrado el servicio corriendo en el puerto {} ".format(port),COLORS.ENDC)
 
     #<---------- | Escaneo de equipos de red | ---------->
     elif(option == 4):
@@ -177,8 +179,12 @@ def selectOption(option):
         os.system("cls")
         title()
         print("1. Alternar verbose (Estado actual: {})".format("Activado"if(pio.getVerbose())else"Desactivado"))
-        if(input("Selecciona opcion de configuración: ") == '1'):
+        print("2. Copiar respuesta automaticamente (Estado actual: {})".format("Activado"if(pio.getAutoCopy())else"Desactivado"))
+        opcion = input("Selecciona opcion de configuración: ")
+        if(opcion == '1'):
             pio.toggleVerbose()
+        elif (opcion == '2'):
+            pio.toggleAutoCopyClipboard()
         else:
             pass
 

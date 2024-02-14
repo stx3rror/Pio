@@ -5,6 +5,7 @@ import requests
 import re
 import sys
 import itertools
+import pyperclip
 class Pio:  
 
     #TODO Cambiar la asignacion de __ip por getIp() dentro de los metodos
@@ -31,6 +32,7 @@ class Pio:
     __sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     __myIp = None  
     __verbose = False
+    __autoCopy = False
     
     
 #<--------------------- | CONSTRUCTOR | --------------------->
@@ -142,6 +144,9 @@ class Pio:
 
     def toggleVerbose(self):
         self.__verbose = not(self.__verbose)
+
+    def toggleAutoCopyClipboard(self):
+        self.__autoCopy = not(self.__autoCopy)
 #<--------------------- | GETTERS | --------------------->
 
 
@@ -202,18 +207,11 @@ class Pio:
         return self.__intervaleRutes
         
     def getIpFromHostname(self):
-    
-        return socket.gethostbyname(self.getHostname())
-
-    def getMyOwnIp(self):
-        #IPv4 Address. . . . . . . . . . . :
-        resultCmd = os.popen("ipconfig") #Esta funcion te ejecuta un comando com si fuese os.system() pero te devuelve el resultado de la ejecucion de comandos
-        for line in resultCmd.readlines():
-            #Leemos un array de lineas con cada linea del resultado
-            if("IPv4 Address" in line): #Si se encuentra la cadena "TTL" en cualquier linea entonces sera porque ha habido respuerta de la ip
-                self.__myIp=line.split(":")[1].split("\n")[0].replace(" ","")
-                break
-        return self.__myIp
+        
+        ip = socket.gethostbyname(self.getHostname())
+        if(self.__autoCopy):
+            self.copyToClipboard(ip)
+        return ip
     
     def getUrlAddress(self):
         return self.__urlAddress
@@ -229,6 +227,9 @@ class Pio:
     
     def getVerbose(self):
         return self.__verbose
+    
+    def getAutoCopy(self):
+        return self.__autoCopy
 #<--------------------- | SCANNERS | --------------------->
 
     def scanPorts(self,funcNoVerbose):
@@ -259,6 +260,8 @@ class Pio:
                     self.setOpenPorts(port)
 
             sock.close()
+        if(self.__autoCopy):
+            self.copyToClipboard(self.getOpenPorts().split(","))
         return self.getOpenPorts()
 
     def scanOnePort(self):
@@ -280,6 +283,8 @@ class Pio:
         puerto = self.getPort()
         try:
             servicio = socket.getservbyport(puerto, "tcp")
+            if(self.__autoCopy):
+                self.copyToClipboard(servicio.upper())
             return servicio.upper()
         except OSError:
             return None
@@ -305,7 +310,11 @@ class Pio:
                 self.setIpsAddressOnline(ipToPing)
                 if(self.__verbose):
                     print(COLORS.OKGREEN + "[+] {} esta conectado!".format(ipToPing) + COLORS.ENDC)
-                
+
+        if(self.__autoCopy):
+            print(self.getIpsAddressOnline())
+            if(len(self.getIpsAddressOnline())>0):
+                self.copyToClipboard(self.getIpsAddressOnline().split(","))#La lista no se separa con split 
         return self.getIpsAddressOnline()
     
     def scanRutesHttp(self,funcNoVerbose):
@@ -343,8 +352,27 @@ class Pio:
                     pass
                 cont+=1
         file.close()
+        if(self.__autoCopy):
+            self.copyToClipboard(self.getUrlsOnline().split(","))
         return self.getUrlsOnline()
-        
+    
+    def getMyOwnIp(self):
+        #IPv4 Address. . . . . . . . . . . :
+        resultCmd = os.popen("ipconfig") #Esta funcion te ejecuta un comando com si fuese os.system() pero te devuelve el resultado de la ejecucion de comandos
+        for line in resultCmd.readlines():
+            #Leemos un array de lineas con cada linea del resultado
+            if("IPv4 Address" in line): #Si se encuentra la cadena "TTL" en cualquier linea entonces sera porque ha habido respuerta de la ip
+                self.__myIp=line.split(":")[1].split("\n")[0].replace(" ","")
+                break
+        if(self.__autoCopy):
+            self.copyToClipboard(self.__myIp)
+        return self.__myIp
+    
+    def copyToClipboard(self,elementToCopy):
+
+        pyperclip.copy(elementToCopy)
+
+
 class COLORS:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
