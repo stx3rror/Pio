@@ -1,10 +1,7 @@
 import socket
 import os
-import time
 import requests
 import re
-import sys
-import itertools
 import pyperclip
 class Pio:  
 
