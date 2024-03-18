@@ -1,4 +1,4 @@
-# PioClass - Herramienta de Escaneo de Red
+# Pio - Herramienta de Escaneo de Red
 
 Esta es una herramienta de línea de comandos escrita en Python que ofrece varias funcionalidades para el escaneo de redes. Permite realizar diferentes tipos de escaneos, desde la exploración de puertos hasta la búsqueda de servicios en un puerto específico. 
 Además, proporciona la capacidad de escanear rangos de direcciones IP, rutas HTTP y obtener la dirección IP de un host.
