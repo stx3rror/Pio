@@ -41,5 +41,5 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para obt
 
 ---
 
-Creado por XSFrenetic©
-Contacto: wwbhty@gmail.com
+Creado por StxError©
+Contacto: stx3rror@gmail.com
